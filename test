@@ -1,0 +1,83 @@
+filbeat 
+
+***************************************
+multiline.pattern: The regexp Pattern that has to be matched. The example pattern matches all lines starting with [DEBUG,ALERT,TRACE,WARNING log level that can be customize according to your logs line format. But that is generic one that will help most of cases.
+multiline.pattern: ‘^[([Aa]lert|ALERT|[Tt]race|TRACE|[Dd]ebug|DEBUG|[Nn]otice|NOTICE|[Ii]nfo|INFO|[Ww]arn?(?:ing)?|WARN?(?:ING)?|[Ee]rr?(?:or)?|ERR?(?:OR)?|[Cc]rit?(?:ical)?|CRIT?(?:ICAL)?|[Ff]atal|FATAL|[Ss]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)’
+
+Default is false for negate. Defines if the pattern match should be negated or not.
+multiline.negate: true
+
+multiline.match define if pattern not match with above pattern where these line need to append. Possible values are “after” or “before”.
+
+multiline.match: after
+
+If you will set this max line after these number of multiline all will ignore
+multiline.max_lines: 50
+
+For Example :
+multiline.pattern: ‘^\[([Aa]lert|ALERT|[Tt]race|TRACE|[Dd]ebug|DEBUG|[Nn]otice|NOTICE|[Ii]nfo|INFO|[Ww]arn?(?:ing)?|WARN?(?:ING)?|[Ee]rr?(?:or)?|ERR?(?:OR)?|[Cc]rit?(?:ical)?|CRIT?(?:ICAL)?|[Ff]atal|FATAL|[Ss]evere|SEVERE|EMERG(?:ENCY)?|[Ee]merg(?:ency)?)’
+multiline.negate: true
+multiline.match: after
+#multiline.max_lines: 50
+
+
+*************************************************************
+
+Exception in thread "main" java.lang.IllegalStateException: A book has a null property
+      at com.example.myproject.Author.getBookIds(Author.java:38)
+      at com.example.myproject.Bootstrap.main(Bootstrap.java:14)
+Caused by: java.lang.NullPointerException
+      at com.example.myproject.Book.getId(Book.java:22)
+      at com.example.myproject.Author.getBookIds(Author.java:35)
+      ... 1 more
+      
+multiline.pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^Caused by:'
+multiline.negate: false
+multiline.match: after
+
+***********************************************************
+ # match multiline events
+  multiline.pattern: '^\['
+  multiline.negate: true
+  multiline.match: after
+  
+  
+************************************************
+  
+2017/06/22 11:26:30 [error] 26067#0: *17918 connect() failed (111: Connection refused) while connecting to upstream, client: 192.168.32.17, server: localhost, request: "GET /wss/ HTTP/1.1", upstream: "http://192.168.12.106:8010/", host: "192.168.12.106"
+2017/06/22 11:26:30 [info] 26067#0:
+2017/06/22 12:05:10 [error] 26067#0: *17922 open() "/data/programs/nginx/html/ws" failed (2: No such file or directory), client: 192.168.32.17, server: localhost, request: "GET /ws HTTP/1.1", host: "192.168.12.106"
+
+
+filebeat.prospectors:
+- input_type: log
+  paths: - /tmp/test.log
+  include_lines: ['error']
+  
+{"@timestamp":"2017-06-23T08:57:25.227Z","beat":{"name":"192.168.12.106"},"input_type":"log","message":"2017/06/22 12:05:10 [error] 26067#0: *17922 open() /data/programs/nginx/html/ws failed (2: No such file or directory), client: 192.168.32.17, server: localhost, request: GET /ws HTTP/1.1, host: 192.168.12.106","offset":30926,"source":"/tmp/test.log","type":"log"}
+{"@timestamp":"2017-06-23T08:57:32.228Z","beat":{"name":"192.168.12.106"},"input_type":"log","message":"2017/06/22 12:05:10 [error] 26067#0: *17922 open() /data/programs/nginx/html/ws failed (2: No such file or directory), client: 192.168.32.17, server: localhost, request: GET /ws HTTP/1.1, host: 192.168.12.106","offset":31342,"source":"/tmp/test.log","type":"log"}
+
+
+*******************************************************
+filebeat.prospectors:
+- input_type: log
+  paths: - /tmp/test.log
+  include_lines: ['error']
+  multiline: pattern: '^\[' negate:  true match:   after
+****************************************************************
+filebeat:
+prospectors:
+-
+paths:
+- /var/log/my_multiline_1/*
+input_type: log
+multiline:
+pattern: ^[a-zA-Zä]{3}\ [0-9]{2}\,\ [0-9]{4}
+negate: true
+match: after
+
+*******************************************************************
+
+
+
+
